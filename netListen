@@ -1,0 +1,29 @@
+package main
+
+import (
+	"fmt"
+	"net"
+	"os"
+)
+
+func main() {
+
+	tcpListen("127.0.0.1:4444")
+
+}
+
+func tcpListen(h string) {
+
+	for {
+		ln, err := net.Listen("tcp", h)
+		if err != nil {
+			fmt.Println("error", err)
+			os.Exit(0)
+			fmt.Println("Listening")
+
+		} else {
+			ln.Accept()
+			fmt.Println("Accepted and Sending to Channel")
+		}
+	}
+}
