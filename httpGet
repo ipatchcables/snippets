@@ -1,0 +1,22 @@
+package main
+
+import (
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
+)
+
+func main() {
+	url := os.Args[1]
+	get, err := http.Get(url)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer get.Body.Close()
+	resp, err := ioutil.ReadAll(get.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(resp))
+}
