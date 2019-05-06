@@ -1,0 +1,18 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"os"
+	"os/exec"
+)
+
+var arg string = os.Args[1]
+
+func main() {
+	if c, err := exec.Command(arg).CombinedOutput(); err != nil {
+		log.Fatal(err)
+	} else {
+		fmt.Printf("%s\n", c)
+	}
+}
